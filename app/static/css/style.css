@@ -1,3 +1,54 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+
 body {
-    background-color: #f1f1f1;
+    color: #fafafa;
+    background-color: #0f0f0f;
+
+    max-width: 500px;
+    margin: auto;
 }
+
+.heading{
+    text-align: center;
+    color: red;
+}
+
+
+.button_group button{
+    color: white;
+    border: 5px solid #3f3f3f;
+    border-radius: 6px;
+    background-color: #9f9f9f;
+    margin: 10px 0 5px 0;
+    padding: 10px 0px;
+    font-size: 25px;
+
+}
+
+
+.button_group{
+    width: 100%;
+    margin:auto 0;
+    text-align: center;
+}
+
+.btn{
+    width: 40%;
+}
+/*
+#btn1{
+    width: 49%;
+}
+
+#btn2{
+    width: 49%;
+}
+*/
+
+
+
