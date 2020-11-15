@@ -1,18 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'program.html' %}
 
-{% block title %}Björns RPi Timelapse Configer - Home {% endblock %}
+{% block title %}Björns RPi Timelapse Configer - Program {{num}} {% endblock %}
 
 
-{% block content %}
-<div class='heading'>
-    <h1>Index!</h1>
-</div>
-<p>This is the index!</p>
-<p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent pellentesque a arcu eget pretium. Morbi elementum elit nulla, nec condimentum lacus tempor et. Quisque eu tempor elit. Proin posuere nibh quis eros facilisis euismod. Phasellus justo leo, vulputate in nisl eu, condimentum aliquet magna. Etiam volutpat fringilla felis, vel tempor ante elementum sit amet. Nunc sit amet aliquam ante. Nam quis nunc a ipsum pellentesque bibendum eu eget justo. Donec non nunc sit amet sapien scelerisque consequat. Vestibulum ultrices est id turpis lacinia sollicitudin. Integer egestas bibendum lorem, id porta diam dictum ac. Duis in faucibus libero, nec malesuada lacus.
-
-<div class='button_group' >
-    <button class='btn'>Program 1</button>
-    <button class='btn'>Program 2</button>
-</div>
-
+{% block program %}
+{{num}}
 {% endblock %}

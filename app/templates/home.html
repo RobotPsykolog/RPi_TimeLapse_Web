@@ -5,14 +5,26 @@
 
 {% block content %}
 <div class='heading'>
-    <h1>Index!</h1>
+    <h1>Björns Raspberry Pi TimeLapse Configurator!</h1>
 </div>
-<p>This is the index!</p>
-<p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent pellentesque a arcu eget pretium. Morbi elementum elit nulla, nec condimentum lacus tempor et. Quisque eu tempor elit. Proin posuere nibh quis eros facilisis euismod. Phasellus justo leo, vulputate in nisl eu, condimentum aliquet magna. Etiam volutpat fringilla felis, vel tempor ante elementum sit amet. Nunc sit amet aliquam ante. Nam quis nunc a ipsum pellentesque bibendum eu eget justo. Donec non nunc sit amet sapien scelerisque consequat. Vestibulum ultrices est id turpis lacinia sollicitudin. Integer egestas bibendum lorem, id porta diam dictum ac. Duis in faucibus libero, nec malesuada lacus.
+<div class='input_field'>
+    <h3>Välj ett program</h3>
+    <br>
+    <p>Program 1:</p>
+    <p>    Bla bla bla</p>
+    <br>
+    <p>Program 2:</p>
+    <p>    Blä blä blä </p>
+
+</div>
 
 <div class='button_group' >
-    <button class='btn'>Program 1</button>
-    <button class='btn'>Program 2</button>
+        <a href="/program1">
+            <button class='btn_2'>Program 1</button>
+        </a>
+        <a href="/program2">
+            <button class='btn_2'>Program 2</button>
+        </a>
 </div>
 
 {% endblock %}
