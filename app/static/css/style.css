@@ -15,11 +15,14 @@ body {
 
 .heading{
     text-align: center;
-    color: red;
 }
 
+.input_field{
+    margin: 20px;
+}
 
-.button_group button{
+.button_group button,
+.form_group form{
     color: white;
     border: 5px solid #3f3f3f;
     border-radius: 6px;
@@ -37,18 +40,10 @@ body {
     text-align: center;
 }
 
-.btn{
-    width: 40%;
-}
-/*
-#btn1{
-    width: 49%;
+.btn_1{
+    width: 96%
 }
 
-#btn2{
-    width: 49%;
+.btn_2{
+    width: 48%;
 }
-*/
-
-
-

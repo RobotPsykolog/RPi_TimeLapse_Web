@@ -10,13 +10,9 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/program1')
-def program1():
-    return render_template('program1.html')
-
-@app.route('/program2')
-def program2():
-    return render_template('program2.html')
+@app.route('/program<number>')
+def program(number):
+    return render_template(f'program{number}.html', num = number)
 
 
 # För att cachen ska laddas om utan shift
