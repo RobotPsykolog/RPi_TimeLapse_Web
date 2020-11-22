@@ -13,8 +13,13 @@
 </div>
 
 <div class='button_group' >
-    <button class='btn_2'>Start</button>
-    <button class='btn_2'>Stopp</button>
+    <form action="" method="POST">
+        <button class='btn_2' type = 'submit' value = 'start' name = 'button'>Start</button>
+        <button class='btn_2' type = 'submit' value = 'stop' name = 'button'>Stopp</button>
+    </form>
+    {% block data %}
+
+    {% endblock %}
     <a href="/home">
         <button class='btn_1'>Home</button>
     </a>
