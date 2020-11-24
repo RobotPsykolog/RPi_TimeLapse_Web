@@ -3,6 +3,10 @@ from app import app
 from flask import render_template, session, request
 from app.models import Program1, Program2
 
+# Lite globala klassinstanser
+program_1 = Program1()
+program_2 = Program2()
+
 @app.route('/')
 @app.route('/index')
 @app.route('/home')
@@ -25,27 +29,24 @@ def program(number):
             if request.form['button'] == "start":
                 print(f'Knappen start trycktes från program {number}!')
                 if session['instance_running'] == '':
-                    Program1.start_button_pressed()
-
-                    #program.run_code()
+                    program_1.start_button_pressed()
 
             else:
                 print(f'Knappen stopp trycktes från program {number}!')
                 if session['instance_running'] == 'Program1':
-                    Program1.stop_button_pressed()
+                    program_1.stop_button_pressed()
 
         else:
 
             if request.form['button'] == "start":
                 print(f'Knappen start trycktes från program {number}!')
                 if session['instance_running'] == '':
-                    Program2.start_button_pressed()
+                    program_2.start_button_pressed()
 
             else:
                 print(f'Knappen stopp trycktes från program {number}!')
                 if session['instance_running'] == 'Program2':
-                    Program2.stop_button_pressed()
-
+                    program_2.stop_button_pressed()
 
     return render_template(f'program{number}.html', num = number )
 

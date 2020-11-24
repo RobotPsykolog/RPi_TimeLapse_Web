@@ -1,74 +1,69 @@
 from app import app
 from flask import session
-import threading
+from threading import Thread, Lock
+import queue
 import time
-from sys import exit
+#from sys import exit
 
-class Programs(threading.Thread):
+class lapcounter:
+
+    def __init__(self, q):
+        self.q = q
+        self.lap = 0
+
+        self.running = True
+
+        while self.running:
+            while not self.q.empty():
+                cmd = self.q.get()
+                print(f'Command is: {cmd}')
+            if cmd == 'stop':
+                self.q.task_done()
+                self.running = False
+
+            print(f'Kör varv nummer {self.lap}')
+            time.sleep(1)
+            self.lap += 1
+        print('Avslutar trådkörning')
+        return
+
+class Programs():
     """ Föräldraklass för att kunna ärva saker """
 
     def __init__(self):
-        super(Programs, self).__init__()
-
+        pass
 
     @staticmethod
     def take_photo():
         print('Tar en bild med kameran')
 
-    def run(self):
-        print("Kör tråd från Program1")
-        lap = 1
-        #while self.flag_running:
-        while session['instance_running'] == 'Program1':
-        #for lap in range(10):
-            print(f'Kör varv nummer {lap}')
-            time.sleep(1)
-            lap += 1
-
-
-class Program1(threading.Thread):
+class Program1(Programs):
     """ Klass för program 1"""
 
-    """
     def __init__(self):
-        super(Program1, self).__init__()
         print('Initierar program 1')
         self.the_thread = None
-        self.flag_running = False
-    """
-    @staticmethod
-    def start_button_pressed():
-        session['instance_running'] = 'Program1'
-        thread = Programs()
-        thread.start()
+        self.q = queue.Queue()
 
-
-    """ 
     def start_button_pressed(self):
-
-        print('Inne i startbutton: Sätter körstatus till kör')
         session['instance_running'] = 'Program1'
-        threading.Thread(None, self).__init__()
-        self.the_thread = threading.Thread()
-        self.flag_running = True
+        self.q.put("snorkel1")
+        self.q.put("snorkel2")
+        self.q.put("snorkel3")
+        self.q.put("snorkel4")
+
+        self.the_thread = Thread(target = lapcounter, args=(self.q, ))
+        self.the_thread.setDaemon(True)
         self.the_thread.start()
-        print("Efter thread start")
-    """
-    @staticmethod
-    def stop_button_pressed():
-        session['instance_runnning'] = ''
 
-    """
+
     def stop_button_pressed(self):
-        print('Inne i stopbutton: Sätter körstatus till inget')
+        self.q.put('stop')
         session['instance_running'] = ''
-        print("Stoppar tråden!")
-        self.flag_running = False
-    """
+        print('Stoppat tråden!')
 
 
-
-class Program2(Programs, threading.Thread):
+class Program2:
 
     """ Klass för Program 2 """
 
