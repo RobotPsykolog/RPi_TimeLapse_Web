@@ -3,32 +3,39 @@ from threading import Thread
 import queue
 import time
 from app import settings
+import importlib
 
-#from sys import exit
+# Testa att importera picamera-modulen, om vi är på pajjen
+try:
+    import picamera
+    pi_camera_exists = True
+except ModuleNotFoundError:
+    print('PiCamera existerade ej')
+    pi_camera_exists = False
 
 
 class Camera:
     """ Klass för att hantera fotning och bakomliggande tråd """
-    def __init__(self, q, num_of_pics, wait_seconds):
+    def __init__(self, q, num_of_pics, num_of_pause_seconds):
         self.q = q
         self.num_of_runs = num_of_pics
-        self.wait_seconds = wait_seconds
+        self.num_of_pause_seconds = num_of_pause_seconds
         self.actual_pic_number = 1
+        if pi_camera_exists:
+            camera = PiCamera()
 
         for i in range(self.num_of_runs):
-            print(self.q)
             while not self.q.empty():
                 cmd = self.q.get()
-                print(f'Command is: {cmd}')
+                # print(f'Command is: {cmd}')
             if cmd == 'stop':
                 self._stop_thread()
                 return
 
             # print(f'Kör varv nummer {i + 1}')
             self._trig_photo()
-            time.sleep(self.wait_seconds)
+            time.sleep(self.num_of_pause_seconds)
 
-        print('Avslutar trådkörning')
         self._stop_thread()
         return
 
@@ -40,15 +47,19 @@ class Camera:
     def _trig_photo(self):
         debug = False
         small_debug = True
-        if debug:
+        if debug: # Om jag vill spara en textfil till rätt mapp
             print(f"Fotar en fot! Bild nummer {self.actual_pic_number} ")
             with open(settings.pic_folder + str('Bild{:04d}').format(self.actual_pic_number) + '.txt', 'w') as outfile:
                 outfile.write(f"Hejsan från Bild{self.actual_pic_number}\n\n")
-        elif small_debug:
+        elif small_debug: # Bara skriva ut bildens nummer
             print(f"Fotar en fot! Bild nummer {self.actual_pic_number} ")
         else:
             # TODO Fixa fotning för pajjen
-            pass
+            if pi_camera_exists:
+                print('Fotar från kamera')
+            else:
+                print('Kunde inte ta bild, Modulen PiCamera har inte kunnat importerats!')
+
         self.actual_pic_number += 1
 
 
@@ -68,10 +79,9 @@ class Program1:
         # För att lägga något i kör-kön. Annars kraschar det.
         self.q.put("dummy_cmd")
 
-        num_of_runs = 10
-        wait_seconds = 0.05
-        self.the_thread = Thread(target = Camera, args=(self.q, num_of_runs, wait_seconds))
-        # self.q.put(self.the_thread)
+        num_of_pics = settings.num_of_pics
+        num_of_pause_seconds = settings.num_of_pause_seconds
+        self.the_thread = Thread(target = Camera, args=(self.q, num_of_pics, num_of_pause_seconds))
         self.the_thread.setDaemon(True)
         self.the_thread.start()
 
