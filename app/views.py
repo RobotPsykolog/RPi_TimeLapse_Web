@@ -2,10 +2,15 @@ from app import app
 
 from flask import render_template, session, request
 from app.models import Program1, Program2
+#from app import settings
+import app.settings as settings
 
-# Lite globala klassinstanser
+
+# Lite globala variabler och klassinstanser
+#run_state = None
 program_1 = Program1()
 program_2 = Program2()
+
 
 @app.route('/')
 @app.route('/index')
@@ -15,37 +20,32 @@ def home():
 
 @app.before_first_request
 def before_first_request():
-    session.clear()
-    session['instance_running'] = ''
+    settings.init()
 
 @app.route('/program<int:number>', methods=['GET', 'POST'])
 def program(number):
-#    global program1
+
     if request.method == 'POST':
-        print(f"Session instance_running: {session['instance_running']}")
 
         if number == 1:
 
             if request.form['button'] == "start":
-                print(f'Knappen start trycktes från program {number}!')
-                if session['instance_running'] == '':
+                if settings.run_state == None:
                     program_1.start_button_pressed()
-
             else:
-                print(f'Knappen stopp trycktes från program {number}!')
-                if session['instance_running'] == 'Program1':
+                if settings.run_state == 'Program1':
                     program_1.stop_button_pressed()
 
         else:
 
             if request.form['button'] == "start":
                 print(f'Knappen start trycktes från program {number}!')
-                if session['instance_running'] == '':
+                if settings.run_state == None:
                     program_2.start_button_pressed()
 
             else:
                 print(f'Knappen stopp trycktes från program {number}!')
-                if session['instance_running'] == 'Program2':
+                if settings.run_state == 'Program2':
                     program_2.stop_button_pressed()
 
     return render_template(f'program{number}.html', num = number )
