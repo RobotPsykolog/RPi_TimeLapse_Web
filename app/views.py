@@ -4,11 +4,10 @@ from flask import render_template, session, request
 from app.models import Program1, Program2
 #from app import settings
 import app.settings as settings
-# Lite globala variabler och klassinstanser
+# Some global variables and class instances
 
 program_1 = Program1()
 program_2 = Program2()
-
 
 
 @app.route('/')
@@ -30,7 +29,7 @@ def program(number):
 
             if request.form['button'] == "start":
                 if settings.run_state == None:
-                    print('Jag kör fram till datahämtningen')
+                    print('I run up to data collection')
                     settings.num_of_pics = int(request.form['nm'])
                     settings.num_of_pause_seconds = int(request.form['num_of_pause_seconds'])
                     program_1.start_button_pressed()
@@ -42,12 +41,12 @@ def program(number):
         else:
 
             if request.form['button'] == "start":
-                print(f'Knappen start trycktes från program {number}!')
+                print(f'Button start got pushed from program{number}!')
                 if settings.run_state == None:
                     program_2.start_button_pressed()
 
             else:
-                print(f'Knappen stopp trycktes från program {number}!')
+                print(f'Button stop got pushed from program Knappen stopp trycktes från program {number}!')
                 if settings.run_state == 'Program2':
                     program_2.stop_button_pressed()
 

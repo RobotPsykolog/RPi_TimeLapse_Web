@@ -10,12 +10,12 @@ try:
     import picamera
     pi_camera_exists = True
 except ModuleNotFoundError:
-    print('PiCamera existerade ej')
+    print('PiCamera lib didn´t exist')
     pi_camera_exists = False
 
 
 class Camera:
-    """ Klass för att hantera fotning och bakomliggande tråd """
+    """ Class to handle phototrig and background thread """
     def __init__(self, q, num_of_pics, num_of_pause_seconds):
         self.q = q
         self.num_of_runs = num_of_pics
@@ -32,7 +32,7 @@ class Camera:
                 self._stop_thread()
                 return
 
-            # print(f'Kör varv nummer {i + 1}')
+            # print(f'Run lap no {i + 1}')
             self._trig_photo()
             time.sleep(self.num_of_pause_seconds)
 
@@ -47,42 +47,42 @@ class Camera:
     def _trig_photo(self):
         debug = False
         small_debug = True
-        if debug: # Om jag vill spara en textfil till rätt mapp
-            print(f"Fotar en fot! Bild nummer {self.actual_pic_number} ")
-            with open(settings.pic_folder + str('Bild{:04d}').format(self.actual_pic_number) + '.txt', 'w') as outfile:
-                outfile.write(f"Hejsan från Bild{self.actual_pic_number}\n\n")
-        elif small_debug: # Bara skriva ut bildens nummer
-            print(f"Fotar en fot! Bild nummer {self.actual_pic_number} ")
+        if debug: # If I want to save a text file to correct folder
+            print(f"Trig photo, Pic no {self.actual_pic_number} ")
+            with open(settings.pic_folder + str('Pic{:04d}').format(self.actual_pic_number) + '.txt', 'w') as outfile:
+                outfile.write(f"Dummytext from Pic {self.actual_pic_number}\n\n")
+        elif small_debug: # Only print the number of the pic
+            print(f"Trig photo, Pic no {self.actual_pic_number} ")
         else:
-            # TODO Fixa fotning för pajjen
+            # TODO Fix photo triggering for Pi
             if pi_camera_exists:
-                print('Fotar från kamera')
+                print('Trigging photo from camera')
             else:
-                print('Kunde inte ta bild, Modulen PiCamera har inte kunnat importerats!')
+                print("Couldn't take a picture, module PiCamera has not been imported!")
 
         self.actual_pic_number += 1
 
 
 class Program1:
-    """ Klass för program 1"""
+    """ Class for program 1"""
 
     def __init__(self ):
-        print('Initierar program 1')
+        print('Init program 1')
         self.the_thread = None
         self.q = queue.Queue()
 
     def start_button_pressed(self):
-        print(f'run_state från Program 1: {settings.run_state}')
+        print(f'run_state from Program 1: {settings.run_state}')
         settings.run_state = 'Program1'
-        print(f'run_state från Program 1: {settings.run_state}')
+        print(f'run_state from Program 1: {settings.run_state}')
 
         # För att lägga något i kör-kön. Annars kraschar det.
         self.q.put("dummy_cmd")
 
         num_of_pics = settings.num_of_pics
         num_of_pause_seconds = settings.num_of_pause_seconds
-        print(f'Antal bilder: {num_of_pics}')
-        print(f'Antal paus-sekunder: {num_of_pause_seconds}')
+        print(f'Number of pics: {num_of_pics}')
+        print(f'Number of paus seconds: {num_of_pause_seconds}')
 
         self.the_thread = Thread(target = Camera, args=(self.q, num_of_pics, num_of_pause_seconds))
         self.the_thread.setDaemon(True)
@@ -95,18 +95,18 @@ class Program1:
 
 class Program2:
 
-    """ Klass för Program 2 """
+    """ Class för Program 2 """
 
     def __init__(self):
-        print('Initierar program 2')
+        print('Init program 2')
 
     @staticmethod
     def start_button_pressed () :
-        print('Inne i startbutton: Sätter körstatus till kör')
+        print('Inside of startbutton: Set runstate to run')
         session['instance_running'] = 'Program2'
 
     @staticmethod
     def stop_button_pressed () :
-        print('Inne i stopbutton: Sätter körstatus till inget')
+        print('Inside of stopbutton: Set runstate to none')
         session['instance_running'] = ''
 
