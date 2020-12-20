@@ -4,27 +4,31 @@
 
 
 {% block program %}
-{% block content %}
-<div class='heading'>
-    <h1>Program {{num}}</h1>
-</div>
-<div class='input_field'>
-    <p>Detta är program nummer {{num}}</p>
-</div>
+    {% block content %}
 
-<div class='button_group' >
-    <form action="" method="POST">
-        <button class='btn_2' type = 'submit' value = 'start' name = 'button'>Start</button>
-        <button class='btn_2' type = 'submit' value = 'stop' name = 'button'>Stopp</button>
-    </form>
-    {% block data %}
+        <div class='heading'>
+            <h1>Program {{num}}</h1>
+        </div>
+        <form action="" method="POST">
+            <div class='input_field'>
+                {% block input_data %}
+
+
+                {% endblock %}
+            </div>
+
+            <div class='button_group' >
+                    <button class='btn_2' type = 'submit' value = 'start' name = 'button'>Start</button>
+                    <button class='btn_2' type = 'submit' value = 'stop' name = 'button'>Stopp</button>
+                    {% block data %}
+
+                    {% endblock %}
+            </div>
+        </form>
+            <a href="/home">
+                <button class='btn_1'>Home</button>
+            </a>
+
 
     {% endblock %}
-    <a href="/home">
-        <button class='btn_1'>Home</button>
-    </a>
-</div>
-
-
-{% endblock %}
 {% endblock %}

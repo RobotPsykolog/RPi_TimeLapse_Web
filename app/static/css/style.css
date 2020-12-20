@@ -18,7 +18,7 @@ body {
 }
 
 .input_field{
-    margin: 20px;
+    margin: 5px;
 }
 
 .button_group button,
@@ -53,4 +53,12 @@ body {
     padding: 20px;
 }
 
+.input_line{
+    font-size: 12px;
+    text-align: top;
+}
 
+#input1, #input2{
+    margin: 8px;
+    margin-top: 5px;
+}

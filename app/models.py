@@ -81,6 +81,9 @@ class Program1:
 
         num_of_pics = settings.num_of_pics
         num_of_pause_seconds = settings.num_of_pause_seconds
+        print(f'Antal bilder: {num_of_pics}')
+        print(f'Antal paus-sekunder: {num_of_pause_seconds}')
+
         self.the_thread = Thread(target = Camera, args=(self.q, num_of_pics, num_of_pause_seconds))
         self.the_thread.setDaemon(True)
         self.the_thread.start()
