@@ -16,6 +16,10 @@ program_2 = Program2()
 def home():
     return render_template('home.html')
 
+@app.route('/livevideo')
+def video():
+    pass
+
 @app.before_first_request
 def before_first_request():
     settings.init()

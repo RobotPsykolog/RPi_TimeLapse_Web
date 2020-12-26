@@ -10,5 +10,6 @@ app.secret_key = 'hemlig_nyckel'
 from app import views
 from app import models
 from app import settings
+from app import webvideo
 
 
