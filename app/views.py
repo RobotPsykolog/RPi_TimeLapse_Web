@@ -1,14 +1,14 @@
 from app import app
 
-from flask import render_template, session, request
+from flask import render_template, session, reques
 from app.models import Program1, Program2
 #from app import settings
 import app.settings as settings
-# Some global variables and class instances
+import app.webvideo
 
+# Some global variables and class instances
 program_1 = Program1()
 program_2 = Program2()
-
 
 @app.route('/')
 @app.route('/index')
