@@ -7,7 +7,7 @@ import importlib
 
 # Testa att importera picamera-modulen, om vi är på pajjen
 try:
-    import picamera
+    from picamera import PiCamera 
     pi_camera_exists = True
 except ModuleNotFoundError:
     print('PiCamera lib didn´t exist')
@@ -22,7 +22,8 @@ class Camera:
         self.num_of_pause_seconds = num_of_pause_seconds
         self.actual_pic_number = 1
         if pi_camera_exists:
-            camera = PiCamera()
+            self.camera = PiCamera()
+            self.camera.rotation = 0
 
         for i in range(self.num_of_runs):
             while not self.q.empty():
@@ -42,11 +43,12 @@ class Camera:
     def _stop_thread(self):
         self.q.task_done()
         settings.run_state = None
+        self.actual_pic_number = 1 # Reset picture number to another round
 
 
     def _trig_photo(self):
         debug = False
-        small_debug = True
+        small_debug = False
         if debug: # If I want to save a text file to correct folder
             print(f"Trig photo, Pic no {self.actual_pic_number} ")
             with open(settings.pic_folder + str('Pic{:04d}').format(self.actual_pic_number) + '.txt', 'w') as outfile:
@@ -56,7 +58,7 @@ class Camera:
         else:
             # TODO Fix photo triggering for Pi
             if pi_camera_exists:
-                print('Trigging photo from camera')
+                self.camera.capture(settings.pic_folder + 'Pic{:04d}'.format(self.actual_pic_number) + '.jpg')
             else:
                 print("Couldn't take a picture, module PiCamera has not been imported!")
 
@@ -97,16 +99,18 @@ class Program2:
 
     """ Class för Program 2 """
 
+    # TODO Det här programmet måste fixas om det ska vara kvar.
+    
     def __init__(self):
         print('Init program 2')
 
     @staticmethod
     def start_button_pressed () :
         print('Inside of startbutton: Set runstate to run')
-        session['instance_running'] = 'Program2'
+        # session['instance_running'] = 'Program2' 
 
     @staticmethod
     def stop_button_pressed () :
         print('Inside of stopbutton: Set runstate to none')
-        session['instance_running'] = ''
+        # session['instance_running'] = ''
 

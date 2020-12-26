@@ -1,14 +1,17 @@
 from app import app
 
+from app.webvideo import *
 from flask import render_template, session, request
 from app.models import Program1, Program2
-#from app import settings
 import app.settings as settings
-import app.webvideo
 
 # Some global variables and class instances
 program_1 = Program1()
 program_2 = Program2()
+
+@app.before_first_request
+def before_first_request():
+    settings.init()
 
 @app.route('/')
 @app.route('/index')
@@ -18,11 +21,10 @@ def home():
 
 @app.route('/livevideo')
 def video():
-    pass
 
-@app.before_first_request
-def before_first_request():
-    settings.init()
+    LiveVideo.video()
+    
+    return render_template('video.html')
 
 @app.route('/program<int:number>', methods=['GET', 'POST'])
 def program(number):
@@ -34,7 +36,7 @@ def program(number):
             if request.form['button'] == "start":
                 if settings.run_state == None:
                     print('I run up to data collection')
-                    settings.num_of_pics = int(request.form['nm'])
+                    settings.num_of_pics = int(request.form['num_of_pics'])
                     settings.num_of_pause_seconds = int(request.form['num_of_pause_seconds'])
                     program_1.start_button_pressed()
             else:

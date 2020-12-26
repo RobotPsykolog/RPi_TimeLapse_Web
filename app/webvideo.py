@@ -92,17 +92,21 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     allow_reuse_address = True
     daemon_threads = True
 
-if pi_camera_exists:
-    with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
-        output = StreamingOutput()
-        #Uncomment the next line to change your Pi's Camera rotation (in degrees)
-        camera.rotation = 0 # 180
-        camera.start_recording(output, format='mjpeg')
-        try:
-            address = ('', 8000)
-            server = StreamingServer(address, StreamingHandler)
-            server.serve_forever()
-        finally:
-            camera.stop_recording()
-else:
-    print('Picamera existerade inte. Kan inte visa live-video')
+class LiveVideo:
+
+    @staticmethod
+    def video():
+        if pi_camera_exists:
+            with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
+                output = StreamingOutput()
+                #Uncomment the next line to change your Pi's Camera rotation (in degrees)
+                camera.rotation = 0 # 180
+                camera.start_recording(output, format='mjpeg')
+                try:
+                    address = ('', 5000)
+                    server = StreamingServer(address, StreamingHandler)
+                    server.serve_forever()
+                finally:
+                    camera.stop_recording()
+        else:
+            print('Picamera existerade inte. Kan inte visa live-video')
