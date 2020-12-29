@@ -58,6 +58,7 @@ class Camera:
         else:
             # TODO Fix photo triggering for Pi
             if pi_camera_exists:
+                print(f'Fotar bild nummer {self.actual_pic_number}')
                 self.camera.capture(settings.pic_folder + 'Pic{:04d}'.format(self.actual_pic_number) + '.jpg')
             else:
                 print("Couldn't take a picture, module PiCamera has not been imported!")
