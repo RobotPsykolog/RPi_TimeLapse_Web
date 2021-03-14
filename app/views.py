@@ -2,7 +2,7 @@ from app import app
 
 from app.webvideo import *
 from flask import render_template, session, request
-from app.models import Program1, Program2
+from app.models import Program1, Program2, LiveVideo
 import app.settings as settings
 
 try:
@@ -15,6 +15,7 @@ except ModuleNotFoundError:
 # Some global variables and class instances
 program_1 = Program1()
 program_2 = Program2()
+live_video = LiveVideo()
 
 @app.before_first_request
 def before_first_request():
@@ -24,14 +25,23 @@ def before_first_request():
 @app.route('/index')
 @app.route('/home')
 def home():
+    if settings.run_state == 'live_video':
+        settings.run_state = None
+
     return render_template('home.html')
 
 @app.route('/livevideo')
 def video():
 
     if pi_camera_exists :
+
         with picamera.PiCamera(resolution = '640x480', framerate = 24) as camera :
+            pass
+
+            # TODO Fixa kod för att fota livevideo med pajj-kameran
+            """
             output = StreamingOutput()
+            
             # Uncomment the next line to change your Pi's Camera rotation (in degrees)
             camera.rotation = 0  # 180
             camera.start_recording(output, format = 'mjpeg')
@@ -41,8 +51,10 @@ def video():
                 server.serve_forever()
             finally :
                 camera.stop_recording()
+            """
     else :
-        print('Picamera existerade inte. Kan inte visa live-video')
+        print('Picamera existerade inte. Ska försöka fejka något')
+        live_video.start()
 
     return render_template('video.html')
 
