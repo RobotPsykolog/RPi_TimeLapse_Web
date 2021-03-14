@@ -3,8 +3,8 @@ from threading import Thread
 import queue
 import time
 from app import settings
-#import importlib
 import os
+import shutil
 
 # Testa att importera picamera-modulen, om vi är på pajjen
 try:
@@ -66,54 +66,6 @@ class Camera_TL:
 
         self.actual_pic_number += 1
 
-class Camera_LV:
-    """ Class to handle phototrig and background thread for live video """
-
-    pic_lista = ['2021-03-10-202618_1.jpg', '2021-03-10-202538_2.jpg', '2021-03-10-202618_2.jpg', '2021-03-10-202557_4.jpg',
-     '2021-03-10-202618_3.jpg', '2021-03-10-202538_4.jpg', '2021-03-10-202521.jpg', '2021-03-10-202557_3.jpg',
-     '2021-03-10-202618_4.jpg', '2021-03-10-202557_2.jpg', '2021-03-10-202538_1.jpg', '2021-03-10-202557_1.jpg',
-     '2021-03-10-202538_3.jpg']
-
-    def __init__(self, q, dummy_var):
-        self.q = q
-        print(dummy_var)
-        if pi_camera_exists:
-            self.camera = PiCamera()
-            self.camera.rotation = 0
-
-        os.mkdir('app/Pictures/LiveVideo')
-        self.live_pic_name = 'live_video_pic.png'
-
-
-        while settings.run_state == 'live_video':
-            while not self.q.empty():
-                cmd = self.q.get()
-                # print(f'Command is: {cmd}')
-            if cmd == 'stop':
-                self._stop_thread()
-                return
-
-            # print(f'Run lap no {i + 1}')
-            self._trig_photo()
-            time.sleep(1)
-
-        self._stop_thread()
-        return
-
-    def _stop_thread(self):
-        if os.path.isdir('app/Pictures/LiveVideo'):
-            if os.path.isfile(f'app/Pictures/LiveVideo/{self.live_pic_name}'):
-                os.remove(f'app/Pictures/LiveVideo/{self.live_pic_name}')
-            os.rmdir('app/Pictures/LiveVideo')
-        self.q.task_done()
-        settings.run_state = None
-
-    def _trig_photo(self):
-
-        print('Fotar en bild med live video')
-        with open(f'app/Pictures/LiveVideo/{self.live_pic_name}', 'w') as file:
-            file.write('Test\n')
-
 
 class Program1:
     """ Class for program 1"""
@@ -164,6 +116,53 @@ class Program2:
         print('Inside of stopbutton: Set runstate to none')
         # session['instance_running'] = ''
 
+
+class Camera_LV(Thread):
+    """ Class to handle phototrig and background thread for live video """
+
+    def __init__(self):
+        super(Camera_LV, self).__init__()
+        if pi_camera_exists:
+            self.camera = PiCamera()
+            self.camera.rotation = 0
+        self.pic_lista = [  '2021-03-10-202618_1.jpg', '2021-03-10-202538_2.jpg', '2021-03-10-202618_2.jpg', 
+                            '2021-03-10-202557_4.jpg', '2021-03-10-202618_3.jpg', '2021-03-10-202538_4.jpg', 
+                            '2021-03-10-202521.jpg', '2021-03-10-202557_3.jpg', '2021-03-10-202618_4.jpg', 
+                            '2021-03-10-202557_2.jpg', '2021-03-10-202538_1.jpg', '2021-03-10-202557_1.jpg',
+                             '2021-03-10-202538_3.jpg']
+        self.pic_pointer = 0 # Dummyvar för att peka i bildlistan
+
+        self.live_pic_name = 'live_video_pic.png'
+        self.livevideo_path = 'app/resources/pictures/livevideo'
+        if not os.path.isdir(self.livevideo_path):
+            os.mkdir(self.livevideo_path)
+
+    def run(self):
+        while settings.run_state == 'live_video':
+            self._trig_photo()
+            time.sleep(0.2)
+
+        self._stop_thread()
+        return
+
+    def _copy_pic(self):
+        shutil.copy(f'app/resources/pictures/testbilder/{self.pic_lista[self.pic_pointer]}', f'{self.livevideo_path}/{self.live_pic_name}')
+        self.pic_pointer += 1
+        if self.pic_pointer >= len(self.pic_lista):
+            self.pic_pointer = 0
+
+    def _trig_photo(self):
+        # Trigging a photo
+        self._copy_pic()
+
+    def _stop_thread(self):
+        if os.path.isdir(self.livevideo_path):
+            if os.path.isfile(f'{self.livevideo_path}/{self.live_pic_name}'):
+                os.remove(f'{self.livevideo_path}/{self.live_pic_name}')
+            os.rmdir(self.livevideo_path)
+        settings.run_state = None
+
+
 class LiveVideo:
 
     """ Class to handle the live video to be able to set focus and see actual camera output """
@@ -172,20 +171,14 @@ class LiveVideo:
     def __init__(self):
         print('Init live video')
         self.the_thread = ...
-        self.q = queue.Queue()
 
     def start(self):
         print(f'run_state from LiveVideo: {settings.run_state}')
         settings.run_state = 'live_video'
         print(f'run_state from LiveVideo: {settings.run_state}')
 
-        # Just to put something in the queue, or else it crashes
-        self.q.put("dummy_cmd")
-
-        self.the_thread = Thread(target = Camera_LV, args=(self.q, 'prutt'))
-        #self.the_thread = Thread(target = Camera_LV.run)
+        self.the_thread = Camera_LV()
         self.the_thread.setDaemon(True)
         self.the_thread.start()
-        #self.the_thread.run()
 
 
