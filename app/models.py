@@ -132,8 +132,8 @@ class Camera_LV(Thread):
                              '2021-03-10-202538_3.jpg']
         self.pic_pointer = 0 # Dummyvar för att peka i bildlistan
 
-        self.live_pic_name = 'live_video_pic.png'
-        self.livevideo_path = 'app/resources/pictures/livevideo'
+        self.live_pic_name = 'live_video_pic.jpg'
+        self.livevideo_path = 'app/static/pictures/livevideo'
         if not os.path.isdir(self.livevideo_path):
             os.mkdir(self.livevideo_path)
 
@@ -146,7 +146,7 @@ class Camera_LV(Thread):
         return
 
     def _copy_pic(self):
-        shutil.copy(f'app/resources/pictures/testbilder/{self.pic_lista[self.pic_pointer]}', f'{self.livevideo_path}/{self.live_pic_name}')
+        shutil.copy(f'app/static/pictures/testbilder/{self.pic_lista[self.pic_pointer]}', f'{self.livevideo_path}/{self.live_pic_name}')
         self.pic_pointer += 1
         if self.pic_pointer >= len(self.pic_lista):
             self.pic_pointer = 0
