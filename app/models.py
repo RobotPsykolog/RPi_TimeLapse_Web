@@ -140,7 +140,7 @@ class Camera_LV(Thread):
     def run(self):
         while settings.run_state == 'live_video':
             self._trig_photo()
-            time.sleep(0.2)
+            time.sleep(0.05)
 
         self._stop_thread()
         return
