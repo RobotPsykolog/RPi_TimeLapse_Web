@@ -4,6 +4,7 @@ import time
 from app import settings
 import os
 import shutil
+from datetime import datetime
 
 # Testa att importera picamera-modulen, om vi är på pajjen
 try:
@@ -17,23 +18,70 @@ class Camera_TimeLapse(Thread):
 
     """ Class to handle Time Lapse photo taking """
 
-    def __init__(self, num_of_pics, num_of_pause_seconds):
+    def __init__(self, num_of_pics, num_of_pause_seconds, resolution):
         super(Camera_TimeLapse, self).__init__()
         self.num_of_pics = num_of_pics
         self.num_of_pause_seconds = num_of_pause_seconds
         self.actual_pic_number = 0
+        self.resolution_dict = {0: (640, 480),
+                                1: (1280, 720),
+                                2: (1640, 922),
+                                3: (1920, 1080),
+                                4: (3280, 2464)}
+        self.resolution = self.resolution_dict[resolution]
         if pi_camera_exists:
             self.camera = PiCamera()
             self.camera.rotation = 0
 
+        print(f'Antal bilder: {self.num_of_pics}')
+        print(f'Sekunder i paus: {self.num_of_pause_seconds}')
+        print(f'Resolution: {self.resolution}')
+
+        self.save_path = self._get_save_path()
+
+    def _get_save_path(self):
+        # Get a save path in USB-memory
+        #  Returns a filepath
+        username = os.listdir('/media')[0]
+        drive_name = os.listdir(f'/media/{username}')[0]
+        drive_path = f'/media/{username}/{drive_name}'
+        today_date_string = datetime.now().strftime('%y%m%d')
+        if not os.path.isdir(f'{drive_path}/TimeLapseSave'):
+            # Folder do not exist in USB-stick
+            os.mkdir(f'{drive_path}/TimeLapseSave')
+            folder = f'{drive_path}/TimeLapseSave/{today_date_string}'
+            os.mkdir(folder)
+            return folder
+        else:
+            # Folder exists in USB-stick. Decide what date folder to save in
+            time_lapse_folder = f'{drive_path}/TimeLapseSave'
+            folder_list = os.listdir(time_lapse_folder)
+            if today_date_string in folder_list:
+                counter = 1
+                while True:
+                    save_folder = f'{today_date_string}_{str(counter)}'
+                    if save_folder not in folder_list:
+                        folder = f'{time_lapse_folder}/{save_folder}'
+                        os.mkdir(folder)
+                        return folder
+                    else:
+                        counter += 1
+            else:
+                folder =  f'{time_lapse_folder}/{today_date_string}'
+                os.mkdir(folder)
+                return folder
+
+
+
     def _trig_photo(self):
-        debug = False
-        small_debug = True
+        debug = True
+        small_debug = False
         self.actual_pic_number += 1
+
 
         if debug: # If I want to save a text file to correct folder
             print(f"Trig photo, Pic no {self.actual_pic_number} ")
-            with open(settings.pic_folder + str('Pic{:04d}').format(self.actual_pic_number) + '.txt', 'w') as outfile:
+            with open(self.save_path + str('/Pic{:04d}').format(self.actual_pic_number) + '.txt', 'w') as outfile:
                 outfile.write(f"Dummytext from Pic {self.actual_pic_number}\n\n")
         elif small_debug: # Only print the number of the pic
             print(f"Trig photo, Pic no {self.actual_pic_number} ")
@@ -74,8 +122,9 @@ class Program1:
 
         num_of_pics = settings.num_of_pics
         num_of_pause_seconds = settings.num_of_pause_seconds
+        resolution = settings.resolution
 
-        self.the_thread = Camera_TimeLapse(num_of_pics, num_of_pause_seconds)
+        self.the_thread = Camera_TimeLapse(num_of_pics, num_of_pause_seconds, resolution)
         self.the_thread.setDaemon(True)
         self.the_thread.start()
 

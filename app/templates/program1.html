@@ -16,6 +16,29 @@
                 <input id='input2' type='number' name='num_of_pause_seconds' value = '1' size = '8' min='1'>
                 <label for="input2">Num of seconds between camera triggering</label>
             </div>
+            <div class='input_line'>
+                <select id="resolution" name="resolution">
+                    <option value = 0>640x480</option>
+                    <option value = 1>1280x720</option>
+                    <option value = 2>1640x922</option>
+                    <option value = 3>1920x1080</option>
+                    <option value = 4>3280x2464</option>
+
+                </select>
+                <label for="resolution">The resolution for the timelapse session </label>
+            </div>
+
+            <divi class="input_line">
+                <input id="num_of_pics_text" type="text" value = "0" size = '8'>
+                <label for="num_of_pics_text">Number of pictures taken</label>
+                <input type="button" value="Update">
+            </divi>
+            <div>
+                <a href="/lastpic">
+                     <button class='btn_1'>Check Last Picture</button>
+                </a>
+            </div>
+
 
     {% endblock %}
 

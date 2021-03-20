@@ -37,6 +37,14 @@ def video():
 
     return render_template('video.html')
 
+@app.route('/lastpic')
+def last_shown_pic():
+    
+    print("Går in på sida senaste tagna bild")
+    
+    return render_template('lastpic.html')
+    
+
 @app.route('/program<int:number>', methods=['GET', 'POST'])
 def program(number):
 
@@ -49,6 +57,7 @@ def program(number):
                     print('I run up to data collection')
                     settings.num_of_pics = int(request.form['num_of_pics'])
                     settings.num_of_pause_seconds = int(request.form['num_of_pause_seconds'])
+                    settings.resolution = int(request.form['resolution'])
                     program_1.start_button_pressed()
             else:
                 if settings.run_state == 'Program1':
