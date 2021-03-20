@@ -1,4 +1,3 @@
-#from app import app
 from threading import Thread
 import queue
 import time
@@ -14,42 +13,24 @@ except ModuleNotFoundError:
     print('PiCamera lib didn´t exist')
     pi_camera_exists = False
 
+class Camera_TimeLapse(Thread):
 
-class Camera_TL:
-    """ Class to handle phototrig and background thread for Time Lapse"""
-    def __init__(self, q, num_of_pics, num_of_pause_seconds):
-        self.q = q
-        self.num_of_runs = num_of_pics
+    """ Class to handle Time Lapse photo taking """
+
+    def __init__(self, num_of_pics, num_of_pause_seconds):
+        super(Camera_TimeLapse, self).__init__()
+        self.num_of_pics = num_of_pics
         self.num_of_pause_seconds = num_of_pause_seconds
-        self.actual_pic_number = 1
+        self.actual_pic_number = 0
         if pi_camera_exists:
             self.camera = PiCamera()
             self.camera.rotation = 0
 
-        for i in range(self.num_of_runs):
-            while not self.q.empty():
-                cmd = self.q.get()
-                # print(f'Command is: {cmd}')
-            if cmd == 'stop':
-                self._stop_thread()
-                return
-
-            # print(f'Run lap no {i + 1}')
-            self._trig_photo()
-            time.sleep(self.num_of_pause_seconds)
-
-        self._stop_thread()
-        return
-
-    def _stop_thread(self):
-        self.q.task_done()
-        settings.run_state = None
-        self.actual_pic_number = 1 # Reset picture number to another round
-
-
     def _trig_photo(self):
         debug = False
         small_debug = True
+        self.actual_pic_number += 1
+
         if debug: # If I want to save a text file to correct folder
             print(f"Trig photo, Pic no {self.actual_pic_number} ")
             with open(settings.pic_folder + str('Pic{:04d}').format(self.actual_pic_number) + '.txt', 'w') as outfile:
@@ -64,38 +45,43 @@ class Camera_TL:
             else:
                 print("Couldn't take a picture, module PiCamera has not been imported!")
 
-        self.actual_pic_number += 1
+    def stop_thread(self):
+        settings.run_state = None
+        self.actual_pic_number = 0
+
+    def run(self):
+
+        for i in range(self.num_of_pics):
+            if settings.run_state == None:
+                break
+            self._trig_photo()
+            time.sleep(self.num_of_pause_seconds)
+
+        self.stop_thread()
+        return
+
 
 
 class Program1:
     """ Class for program 1"""
 
-    def __init__(self ):
+    def __init__(self):
         print('Init program 1')
         self.the_thread = ...
-        self.q = queue.Queue()
 
     def start_button_pressed(self):
-        print(f'run_state from Program 1: {settings.run_state}')
         settings.run_state = 'Program1'
-        print(f'run_state from Program 1: {settings.run_state}')
-
-        # För att lägga något i kör-kön. Annars kraschar det.
-        self.q.put("dummy_cmd")
 
         num_of_pics = settings.num_of_pics
         num_of_pause_seconds = settings.num_of_pause_seconds
-        print(f'Number of pics: {num_of_pics}')
-        print(f'Number of paus seconds: {num_of_pause_seconds}')
 
-        self.the_thread = Thread(target = Camera_TL, args=(self.q, num_of_pics, num_of_pause_seconds))
+        self.the_thread = Camera_TimeLapse(num_of_pics, num_of_pause_seconds)
         self.the_thread.setDaemon(True)
         self.the_thread.start()
 
 
     def stop_button_pressed(self):
-        self.q.put('stop')
-
+        self.the_thread.stop_thread()
 
 class Program2:
 
@@ -117,11 +103,11 @@ class Program2:
         # session['instance_running'] = ''
 
 
-class Camera_LV(Thread):
+class Camera_LiveVideo(Thread):
     """ Class to handle phototrig and background thread for live video """
 
     def __init__(self):
-        super(Camera_LV, self).__init__()
+        super(Camera_LiveVideo, self).__init__()
         if pi_camera_exists:
             self.camera = PiCamera()
             self.camera.rotation = 0
@@ -173,11 +159,9 @@ class LiveVideo:
         self.the_thread = ...
 
     def start(self):
-        print(f'run_state from LiveVideo: {settings.run_state}')
         settings.run_state = 'live_video'
-        print(f'run_state from LiveVideo: {settings.run_state}')
 
-        self.the_thread = Camera_LV()
+        self.the_thread = Camera_LiveVideo()
         self.the_thread.setDaemon(True)
         self.the_thread.start()
 

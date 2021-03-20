@@ -1,6 +1,5 @@
 from app import app
 
-from app.webvideo import *
 from flask import render_template, session, request
 from app.models import Program1, Program2, LiveVideo
 import app.settings as settings
@@ -33,28 +32,8 @@ def home():
 @app.route('/livevideo')
 def video():
 
-    if pi_camera_exists :
-
-        with picamera.PiCamera(resolution = '640x480', framerate = 24) as camera :
-            pass
-
-            # TODO Fixa kod för att fota livevideo med pajj-kameran
-            """
-            output = StreamingOutput()
-            
-            # Uncomment the next line to change your Pi's Camera rotation (in degrees)
-            camera.rotation = 0  # 180
-            camera.start_recording(output, format = 'mjpeg')
-            try :
-                address = ('', 5000)
-                server = StreamingServer(address, StreamingHandler)
-                server.serve_forever()
-            finally :
-                camera.stop_recording()
-            """
-    else :
-        print('Picamera existerade inte. Ska försöka fejka något')
-        live_video.start()
+    print('Picamera existerade inte. Ska försöka fejka något')
+    live_video.start()
 
     return render_template('video.html')
 
