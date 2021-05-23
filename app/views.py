@@ -41,7 +41,7 @@ def video():
 def last_shown_pic():
     
     print("Går in på sida senaste tagna bild")
-    
+    #program_1.last_pic_button_pressed()
     return render_template('lastpic.html')
     
 
@@ -59,9 +59,13 @@ def program(number):
                     settings.num_of_pause_seconds = int(request.form['num_of_pause_seconds'])
                     settings.resolution = int(request.form['resolution'])
                     program_1.start_button_pressed()
-            else:
+            elif request.form['button'] == 'stop':
                 if settings.run_state == 'Program1':
                     program_1.stop_button_pressed()
+            elif request.form['button'] == 'lastpic':
+                program_1.last_pic_button_pressed()
+                return render_template('lastpic.html')
+
 
 
         else:

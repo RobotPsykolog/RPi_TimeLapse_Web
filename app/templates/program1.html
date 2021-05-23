@@ -2,7 +2,6 @@
 
 {% block title %}Creatino RPi Timelapse Configer - Program 1 {% endblock %}
 
-
 {% block program %}
 
     {{num}}
@@ -28,18 +27,16 @@
                 <label for="resolution">The resolution for the timelapse session </label>
             </div>
 
-            <divi class="input_line">
+            <div class="input_line">
                 <input id="num_of_pics_text" type="text" value = "0" size = '8'>
                 <label for="num_of_pics_text">Number of pictures taken</label>
-                <input type="button" value="Update">
-            </divi>
+                <input type="button" value="Update" onClick="updatePicNums()">
+            </div>
             <div>
-                <a href="/lastpic">
-                     <button class='btn_1'>Check Last Picture</button>
-                </a>
+                <button class='btn_1' type = 'submit' value = 'lastpic' name = 'button'>Check Last Picture</button>
             </div>
 
-
+        <script src="/static/js/ajax_numofpics.js"></script>
     {% endblock %}
 
 {% endblock %}

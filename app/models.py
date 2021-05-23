@@ -1,5 +1,4 @@
 from threading import Thread
-import queue
 import time
 from app import settings
 import os
@@ -29,6 +28,7 @@ class Camera_TimeLapse(Thread):
                                 3: (1920, 1080),
                                 4: (3280, 2464)}
         self.resolution = self.resolution_dict[resolution]
+        self.last_pic_path = ...
         if pi_camera_exists:
             self.camera = PiCamera()
             self.camera.rotation = 0
@@ -78,7 +78,6 @@ class Camera_TimeLapse(Thread):
         small_debug = False
         self.actual_pic_number += 1
 
-
         if debug: # If I want to save a text file to correct folder
             print(f"Trig photo, Pic no {self.actual_pic_number} ")
             with open(self.save_path + str('/Pic{:04d}').format(self.actual_pic_number) + '.txt', 'w') as outfile:
@@ -88,10 +87,17 @@ class Camera_TimeLapse(Thread):
         else:
             # TODO Fix photo triggering for Pi
             if pi_camera_exists:
-                print(f'Fotar bild nummer {self.actual_pic_number}')
-                self.camera.capture(settings.pic_folder + 'Pic{:04d}'.format(self.actual_pic_number) + '.jpg')
+                self.last_pic_path = '{}/Pic{:04d}.jpg'.format(self.save_path, self.actual_pic_number)
+                self.camera.capture(self.last_pic_path)
             else:
                 print("Couldn't take a picture, module PiCamera has not been imported!")
+
+    def get_last_picture(self):
+        if pi_camera_exists:
+            shutil.copy(self.last_pic_path, 'static/pictures/last_picture/the_picture.jpg')
+        else:
+            shutil.copy('app/static/pictures/testbilder/2021-03-10-202521.jpg', 'app/static/pictures/last_picture/last_picture.jpg')
+
 
     def stop_thread(self):
         settings.run_state = None
@@ -131,6 +137,9 @@ class Program1:
 
     def stop_button_pressed(self):
         self.the_thread.stop_thread()
+
+    def last_pic_button_pressed(self):
+        self.the_thread.get_last_picture()
 
 class Program2:
 
