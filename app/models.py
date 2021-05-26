@@ -31,7 +31,7 @@ class Camera_TimeLapse(Thread):
         self.last_pic_path = ...
         if pi_camera_exists:
             self.camera = PiCamera()
-            self.camera.rotation = 0
+            self.camera.rotation = settings.rotation 
 
         print(f'Antal bilder: {self.num_of_pics}')
         print(f'Sekunder i paus: {self.num_of_pause_seconds}')
@@ -47,7 +47,7 @@ class Camera_TimeLapse(Thread):
         drive_path = f'/media/{username}/{drive_name}'
         today_date_string = datetime.now().strftime('%y%m%d')
         if not os.path.isdir(f'{drive_path}/TimeLapseSave'):
-            # Folder do not exist in USB-stick
+            # Folder do not exist on USB-stick
             os.mkdir(f'{drive_path}/TimeLapseSave')
             folder = f'{drive_path}/TimeLapseSave/{today_date_string}'
             os.mkdir(folder)
@@ -72,9 +72,9 @@ class Camera_TimeLapse(Thread):
                 return folder
 
 
-
     def _trig_photo(self):
-        debug = True
+        
+        debug = False
         small_debug = False
         self.actual_pic_number += 1
 
@@ -85,7 +85,7 @@ class Camera_TimeLapse(Thread):
         elif small_debug: # Only print the number of the pic
             print(f"Trig photo, Pic no {self.actual_pic_number} ")
         else:
-            # TODO Fix photo triggering for Pi
+            # To trig the Raspi camera and save the picture
             if pi_camera_exists:
                 self.last_pic_path = '{}/Pic{:04d}.jpg'.format(self.save_path, self.actual_pic_number)
                 self.camera.capture(self.last_pic_path)
@@ -111,6 +111,9 @@ class Camera_TimeLapse(Thread):
             self._trig_photo()
             time.sleep(self.num_of_pause_seconds)
 
+        # Stäng kameran
+        self.camera.close()
+
         self.stop_thread()
         return
 
@@ -133,7 +136,6 @@ class Program1:
         self.the_thread = Camera_TimeLapse(num_of_pics, num_of_pause_seconds, resolution)
         self.the_thread.setDaemon(True)
         self.the_thread.start()
-
 
     def stop_button_pressed(self):
         self.the_thread.stop_thread()
@@ -166,9 +168,12 @@ class Camera_LiveVideo(Thread):
 
     def __init__(self):
         super(Camera_LiveVideo, self).__init__()
+        print('Inne i init Camera LiveVideo')
+        print(f'Resolution : {settings.resolution}')
+        print(f'Rotation : {settings.rotation}')
         if pi_camera_exists:
             self.camera = PiCamera()
-            self.camera.rotation = 0
+            self.camera.rotation = settings.rotation 
         self.pic_lista = [  '2021-03-10-202618_1.jpg', '2021-03-10-202538_2.jpg', '2021-03-10-202618_2.jpg', 
                             '2021-03-10-202557_4.jpg', '2021-03-10-202618_3.jpg', '2021-03-10-202538_4.jpg', 
                             '2021-03-10-202521.jpg', '2021-03-10-202557_3.jpg', '2021-03-10-202618_4.jpg', 
@@ -184,7 +189,7 @@ class Camera_LiveVideo(Thread):
     def run(self):
         while settings.run_state == 'live_video':
             self._trig_photo()
-            time.sleep(0.05)
+            time.sleep(1) # TODO Ändra denna så att det blir en rimlig tid
 
         self._stop_thread()
         return
@@ -197,7 +202,8 @@ class Camera_LiveVideo(Thread):
 
     def _trig_photo(self):
         # Trigging a photo
-        self._copy_pic()
+        # self._copy_pic()
+        self.camera.capture(f'{self.livevideo_path}/{self.live_pic_name}')
 
     def _stop_thread(self):
         if os.path.isdir(self.livevideo_path):
@@ -205,6 +211,7 @@ class Camera_LiveVideo(Thread):
                 os.remove(f'{self.livevideo_path}/{self.live_pic_name}')
             os.rmdir(self.livevideo_path)
         settings.run_state = None
+        self.camera.close()
 
 
 class LiveVideo:
